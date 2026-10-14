@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+ #supportHero{
+  background-color: rgb(56, 126 , 209);
+  color: white;
+ }
+
+  #supportHero a{
+    color: white;
+  }
+
+ #supportWrapper{
+  display: flex;
+  justify-content: space-between;
+  margin: 0px 150px;
+ }
+
+ #supportWrapper input{
+  padding: 20px 50px;
+  width: 100%;
+  font-size: 20px;
+  border-radius: 10px;
+  border: none;
+ }
