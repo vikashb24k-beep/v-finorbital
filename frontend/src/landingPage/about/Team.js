@@ -12,7 +12,7 @@ function Team() {
       <div className="row align-items-center">
         <div className="col-md-6 p-5 text-center">
           <img
-            src="/media/images/nithinKamath.jpg"
+            src="/media/images/vikash.png"
             alt="Vikash Kumar"
             className="img-fluid rounded-circle"
             style={{ width: "40%" }}
