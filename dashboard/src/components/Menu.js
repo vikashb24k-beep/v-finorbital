@@ -41,7 +41,7 @@ const Menu = () => {
               </ul>
               <hr />
               <div className="profile">
-                  <div className="avatar">ZU</div>
+                  <div className="avatar">VFO</div>
                   <p className="username">USERID</p>
               </div>
           </div>
