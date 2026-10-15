@@ -1,11 +1,27 @@
 import React from "react";
-
-import { holdings } from "../data/data";
+import { useEffect, useState } from "react";
 
 const Holdings = () => {
+  const [holdings, setHoldings] = useState([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:3000/holdings")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Unable to load holdings");
+        }
+        return response.json();
+      })
+      .then((payload) => setHoldings(payload.data))
+      .catch((requestError) => setError(requestError.message));
+  }, []);
+
   return (
     <>
       <h3 className="title">Holdings ({holdings.length})</h3>
+
+      {error && <p>{error}</p>}
 
       <div className="order-table">
         <table>
@@ -20,14 +36,14 @@ const Holdings = () => {
             <th>Day chg.</th>
           </tr>
 
-          {holdings.map((stock, index) => {
+          {holdings.map((stock) => {
             const curValue = stock.price * stock.qty;
             const isProfit = curValue - stock.avg * stock.qty >= 0.0;
             const profClass = isProfit ? "profit" : "loss";
             const dayClass = stock.isLoss ? "loss" : "profit";
 
             return (
-              <tr key={index}>
+              <tr key={stock._id || stock.name}>
                 <td>{stock.name}</td>
                 <td>{stock.qty}</td>
                 <td>{stock.avg.toFixed(2)}</td>
