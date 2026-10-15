@@ -4,6 +4,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const bodyParser = require("body-parser");
 
 const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
@@ -11,11 +12,12 @@ const { OrdersModel } = require("./model/OrdersModel");
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3002;
 const MONGO_URI = process.env.MONGO_URL;
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 
 // Home route
 app.get("/", (req, res) => {
@@ -149,14 +151,29 @@ app.get("/allPositions", async (req, res) => {
 app.post("/newOrder", async (req, res) => {
   try {
     const { name, qty, price, mode } = req.body;
+    const parsedQty = Number(qty);
+    const parsedPrice = Number(price);
 
-    if (!name || qty == null || price == null || !mode) {
+    if (
+      typeof name !== "string" ||
+      !name.trim() ||
+      !Number.isInteger(parsedQty) ||
+      parsedQty <= 0 ||
+      !Number.isFinite(parsedPrice) ||
+      parsedPrice <= 0 ||
+      !["BUY", "SELL"].includes(mode)
+    ) {
       return res.status(400).json({
-        message: "name, qty, price, and mode are required",
+        message: "Provide a stock name, a positive whole quantity, a positive price, and a valid order mode",
       });
     }
 
-    const newOrder = new OrdersModel({ name, qty, price, mode });
+    const newOrder = new OrdersModel({
+      name: name.trim(),
+      qty: parsedQty,
+      price: parsedPrice,
+      mode,
+    });
     const savedOrder = await newOrder.save();
 
     res.status(201).json({
@@ -169,6 +186,16 @@ app.post("/newOrder", async (req, res) => {
       message: "Failed to save order",
       error: err.message,
     });
+  }
+});
+
+app.get("/allOrders", async (req, res) => {
+  try {
+    const orders = await OrdersModel.find({}).sort({ _id: -1 });
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error("Fetch orders error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
